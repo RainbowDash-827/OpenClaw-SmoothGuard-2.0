@@ -96,7 +96,7 @@ smooth-guard:
 ✅ [审计通过] 正在呼叫云端 Qwen/Qwen2.5-7B-Instruct 进行最终回答...
 ✨ [云端传输完成]
 ```
-Qwen3 输出
+云端 Qwen2.5-7B 输出
 ```markdown
 Hello! How can I assist you today?
 ```
@@ -127,4 +127,4 @@ smooth-guard:
 ====================
 🚫 [拦截] 本地 ollama/qwen3:1.7b 判定此请求有越狱风险！
 ```
-Qwen3 不做回答
+云端 Qwen2.5-7B 输出
