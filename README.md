@@ -1,0 +1,1 @@
+# OpenClaw-SmoothGuard-2.0
