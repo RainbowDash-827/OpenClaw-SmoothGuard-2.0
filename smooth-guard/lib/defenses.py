@@ -74,7 +74,6 @@ class SmoothLLM(Defense):
 
 
 def call_free_api_paraphrase(input_text, model_name, api_url, api_key):
-    proxies = {"http": "http://127.0.0.1:7890", "https": "http://127.0.0.1:7890"}
     paraphrase_template = f"""
         In this task, you will receive an english instruction. Your goal is to paraphrase it.
         Follow the guidelines:
@@ -91,11 +90,11 @@ def call_free_api_paraphrase(input_text, model_name, api_url, api_key):
             {"role": "system", "content": "You are a professional assistant that outputs strictly in JSON format."},
             {"role": "user", "content": paraphrase_template}
         ],
-        "response_format": {"type": "json_object"},
+        # "response_format": {"type": "json_object"},
         "temperature": 0.4
     }
     try:
-        response = requests.post(api_url, json=payload, headers=headers, timeout=45, proxies=proxies)
+        response = requests.post(api_url, json=payload, headers=headers, timeout=1000)
         response.raise_for_status()
         res_data = response.json()
         content = res_data['choices'][0]['message']['content']
@@ -139,9 +138,21 @@ def smoothllm(
     print('=' * 20)
 
     perturbed_prompts = []
-    for i, p_raw in enumerate(raw_perturbed_list):
-        p_paraphrased = call_free_api_paraphrase(p_raw, MODEL_NAME, API_URL, API_KEY)
-        perturbed_prompts.append(p_paraphrased)
+    from concurrent.futures import ThreadPoolExecutor
+    with ThreadPoolExecutor(max_workers=num_copies) as executor:
+        # 将所有改写任务提交给线程池
+        futures = [
+            executor.submit(call_free_api_paraphrase, p_raw, MODEL_NAME, API_URL, API_KEY)
+            for p_raw in raw_perturbed_list
+        ]
+        # 收集结果
+        for future in futures:
+            try:
+                perturbed_prompts.append(future.result())
+            except Exception as e:
+                print(f"❌ 某个副本改写失败: {e}")
+                # 失败了就用原话凑数，保证程序不卡死
+                perturbed_prompts.append(raw_perturbed_list[0])
 
     print('\n' + '=' * 20)
     print('修复后的prompt:')
