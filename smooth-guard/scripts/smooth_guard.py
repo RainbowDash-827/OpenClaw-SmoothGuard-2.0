@@ -22,7 +22,7 @@ app = FastAPI()
 LOCAL_OLLAMA_URL = "http://127.0.0.1:11434/v1/chat/completions"
 
 CLOUD_API_URL = "https://api.siliconflow.cn/v1/chat/completions"
-CLOUD_API_KEY = "sk-ebzdvsgnvhzgmmafruonwgdtryrvqpwvctduhpcwdhoxiliw"
+CLOUD_API_KEY = "your-api-key"
 CLOUD_MODEL_NAME = "Qwen/Qwen2.5-7B-Instruct"
 # ==========================================
 
